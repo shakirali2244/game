@@ -10,17 +10,31 @@ public class ball : MonoBehaviour
     public GameObject firstbaseobj;
     public GameObject referencebaseobj;
     public System.Collections.Generic.List<GameObject> basesobj;
-    public int lastcollision;
+    float leftBorder;
+    float rightBorder;
     // Use this for initialization
     void Start()
     {
-        lastcollision = 0;
         rb = GetComponent<Rigidbody2D>();
         rb.mass = 10f;
         ran = new RandomProportional();
         firstbaseobj = GameObject.Find("GrassSprite (3)");
         referencebaseobj = GameObject.Find("GrassSprite (4)");
         basesobj.Add(firstbaseobj);
+        //var dist = (rb.transform.position - Camera.main.transform.position).z;
+        //leftBorder = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, dist)).x;
+        //rightBorder = Camera.main.ViewportToWorldPoint(new Vector3(1, 0, dist)).x;
+       
+
+        Camera cam = Camera.main;
+        float height = 2f * cam.orthographicSize;
+        float width = height * cam.aspect;
+        leftBorder = -width / 2f;
+        rightBorder = width / 2f;
+        //transform.position.x = Mathf.Clamp(transform.position.x, leftBorder, rightBorder);
+        print(rightBorder + " rb");
+        print(leftBorder + " lb");
+
     }
 
     void OnCollisionEnter2D(Collision2D coll)
@@ -32,12 +46,11 @@ public class ball : MonoBehaviour
             rb.velocity = Vector2.zero;
             for (int i = 0; i < 10; i++)
             {
-                rb.AddForce(Vector2.up * 1000f);
+                rb.AddForce(Vector2.up * 70*rb.mass);
             }
             coll.gameObject.GetComponent<Base>().collided = true;
             int test = (int)(ran.getIt() * 10) - 10;
-            print("test "+ test);
-            createBase(new Vector2(test, rb.position.y+20));
+            createBase(new Vector2(test, rb.position.y + 15));
 
         }
 
@@ -47,12 +60,11 @@ public class ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        lastcollision++;
         rb.AddForce(new Vector2(Input.acceleration.x, 0) * 1000f);
-        if (rb.position.x > 51)
-            rb.position = new Vector2(-50, rb.position.y);
-        if (rb.position.x < -51)
-            rb.position = new Vector2(50, rb.position.y);
+        if (rb.position.x > rightBorder)
+            rb.position.Set(leftBorder+1, rb.position.y);
+        if (rb.position.x < leftBorder)
+            rb.position.Set(rightBorder -1, rb.position.y);
         foreach (GameObject a in basesobj)
         {
             if (a != null) {
@@ -62,18 +74,29 @@ public class ball : MonoBehaviour
                 {
                     //print("velocity is " + rb.velocity.y);
                     a.GetComponent<Base>().moveY(-rb.velocity.y);
+
                 }
                 if (a.GetComponent<Base>().getYPosition() < -25)
                 {
                     Destroy(a);
                 }
-                if (a.GetComponent<Base>().getYPosition() < rb.position.y)
+                if (a.GetComponent<Base>().getYPosition()+5 < rb.position.y)
                 {
                     //print("BCON");
                     a.GetComponent<Base>().bcOn();
                 }
             }
         }
+        if ((int)rb.velocity.y > 0)
+        {
+            int test = (int)(ran.getIt() * 10) - 10;
+            if ((int)(ran.getIt() * 50) == 25)
+            {
+                print("spawning new platform at x= " + test);
+                createBase(new Vector2(test, rb.position.y+test));
+            }
+        }
+            
     }
 
     public void createBase(Vector2 pos)
