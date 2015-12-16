@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 
 //This script manages the player object
 public class ball : MonoBehaviour
@@ -9,17 +12,24 @@ public class ball : MonoBehaviour
     private Base firstbase;
     public GameObject firstbaseobj;
     public GameObject referencebaseobj;
-    public System.Collections.Generic.List<GameObject> basesobj;
+    public List<GameObject> basesobj;
+    float width;
     float leftBorder;
     float rightBorder;
+    GameObject scoretextobj;
+    Text scoretext;
+    private float score;
     // Use this for initialization
     void Start()
     {
+        score = 0f;
         rb = GetComponent<Rigidbody2D>();
         rb.mass = 10f;
         ran = new RandomProportional();
         firstbaseobj = GameObject.Find("GrassSprite (3)");
         referencebaseobj = GameObject.Find("GrassSprite (4)");
+        scoretextobj = GameObject.Find("Score");
+        scoretext = scoretextobj.GetComponent<Text>();
         basesobj.Add(firstbaseobj);
         //var dist = (rb.transform.position - Camera.main.transform.position).z;
         //leftBorder = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, dist)).x;
@@ -28,11 +38,11 @@ public class ball : MonoBehaviour
 
         Camera cam = Camera.main;
         float height = 2f * cam.orthographicSize;
-        float width = height * cam.aspect;
+        width = height * cam.aspect;
         leftBorder = -width / 2f;
         rightBorder = width / 2f;
         //transform.position.x = Mathf.Clamp(transform.position.x, leftBorder, rightBorder);
-        print(rightBorder + " rb");
+        print(leftBorder + " rb");
         print(leftBorder + " lb");
 
     }
@@ -49,7 +59,7 @@ public class ball : MonoBehaviour
                 rb.AddForce(Vector2.up * 70*rb.mass);
             }
             coll.gameObject.GetComponent<Base>().collided = true;
-            int test = (int)(ran.getIt() * 10) - 10;
+            int test = (int)((ran.getIt() * width) - width/2);
             createBase(new Vector2(test, rb.position.y + 15));
 
         }
@@ -60,11 +70,20 @@ public class ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        rb.AddForce(new Vector2(Input.acceleration.x, 0) * 1000f);
+        rb.AddForce(new Vector2(Input.acceleration.x * 1000f, 0));
+        print("ball height is "+ rb.position.y);
         if (rb.position.x > rightBorder)
-            rb.position.Set(leftBorder+1, rb.position.y);
+        {
+            rb.MovePosition(new Vector2(leftBorder + 1, rb.position.y));
+            print("teleporting from rt to lf");
+        }
+            
         if (rb.position.x < leftBorder)
-            rb.position.Set(rightBorder -1, rb.position.y);
+        {
+            print("teleporting from rt to lf");
+            rb.MovePosition(new Vector2(rightBorder - 1, rb.position.y));
+        }
+            
         foreach (GameObject a in basesobj)
         {
             if (a != null) {
@@ -72,15 +91,25 @@ public class ball : MonoBehaviour
                // print("bc off? " + a.GetComponent<Base>().bc.isTrigger);
                 if ((int)rb.velocity.y > 0)
                 {
+                    score++;
+                    SetCountText();
                     //print("velocity is " + rb.velocity.y);
-                    a.GetComponent<Base>().moveY(-rb.velocity.y);
+                    if (rb.position.y > 0)
+                    {
+                        a.GetComponent<Base>().moveY(-rb.velocity.y * 2);
+                        rb.velocity.Set(rb.velocity.x, 0);
+                    }
+                        
+                    else
+                        a.GetComponent<Base>().moveY(-rb.velocity.y);
+                    
 
                 }
                 if (a.GetComponent<Base>().getYPosition() < -25)
                 {
                     Destroy(a);
                 }
-                if (a.GetComponent<Base>().getYPosition()+5 < rb.position.y)
+                if (a.GetComponent<Base>().getYPosition()+ a.GetComponent<Base>().getThickness() < rb.position.y)
                 {
                     //print("BCON");
                     a.GetComponent<Base>().bcOn();
@@ -89,6 +118,8 @@ public class ball : MonoBehaviour
         }
         if ((int)rb.velocity.y > 0)
         {
+            score++;
+            SetCountText();
             int test = (int)(ran.getIt() * 10) - 10;
             if ((int)(ran.getIt() * 50) == 25)
             {
@@ -96,6 +127,7 @@ public class ball : MonoBehaviour
                 createBase(new Vector2(test, rb.position.y+test));
             }
         }
+
             
     }
 
@@ -105,6 +137,12 @@ public class ball : MonoBehaviour
         basesobj.Add(temp);
     }
 
+    void SetCountText()
+    {
+        scoretext.text = "Score: " + score.ToString();
+    }
+
+
 
     public class RandomProportional : System.Random
     {
@@ -113,4 +151,6 @@ public class ball : MonoBehaviour
             return base.Sample();
         }
     }
+
+
 }

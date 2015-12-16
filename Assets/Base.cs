@@ -10,6 +10,7 @@ public class Base : MonoBehaviour {
     void Start () {
         rb = GetComponent<Rigidbody2D>();
         bc = GetComponent<BoxCollider2D>();
+        
     }
 
     public void bcOn()
@@ -28,6 +29,11 @@ public class Base : MonoBehaviour {
     void Update () {
 	    
 	}
+
+    public float getThickness()
+    {
+        return bc.size.y / 2;
+    }
 
     public void moveY(float inp)
     {
