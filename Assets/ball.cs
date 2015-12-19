@@ -9,7 +9,6 @@ public class ball : MonoBehaviour
 {
     private Rigidbody2D rb;
     RandomProportional ran;
-    private Base firstbase;
     public GameObject firstbaseobj;
     public GameObject referencebaseobj;
     public List<GameObject> basesobj;
@@ -24,24 +23,19 @@ public class ball : MonoBehaviour
     {
         score = 0f;
         rb = GetComponent<Rigidbody2D>();
-        rb.mass = 10f;
+        rb.mass = 30f;
         ran = new RandomProportional();
         firstbaseobj = GameObject.Find("GrassSprite (3)");
         referencebaseobj = GameObject.Find("GrassSprite (4)");
         scoretextobj = GameObject.Find("Score");
         scoretext = scoretextobj.GetComponent<Text>();
         basesobj.Add(firstbaseobj);
-        //var dist = (rb.transform.position - Camera.main.transform.position).z;
-        //leftBorder = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, dist)).x;
-        //rightBorder = Camera.main.ViewportToWorldPoint(new Vector3(1, 0, dist)).x;
-       
 
         Camera cam = Camera.main;
         float height = 2f * cam.orthographicSize;
         width = height * cam.aspect;
         leftBorder = -width / 2f;
         rightBorder = width / 2f;
-        //transform.position.x = Mathf.Clamp(transform.position.x, leftBorder, rightBorder);
         print(leftBorder + " rb");
         print(leftBorder + " lb");
 
@@ -70,17 +64,18 @@ public class ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        rb.AddForce(new Vector2(Input.acceleration.x * 1000f, 0));
+        rb.AddForce(new Vector2(Input.mousePosition.x-(Screen.width / 2), 0) * 3);
+        print("applying units of force in x axis " + (Input.mousePosition.x - (Screen.width / 2)));
         print("ball height is "+ rb.position.y);
         if (rb.position.x > rightBorder)
         {
             rb.MovePosition(new Vector2(leftBorder + 1, rb.position.y));
-            print("teleporting from rt to lf");
+            //print("teleporting from rt to lf");
         }
             
         if (rb.position.x < leftBorder)
         {
-            print("teleporting from rt to lf");
+            //print("teleporting from rt to lf");
             rb.MovePosition(new Vector2(rightBorder - 1, rb.position.y));
         }
             
