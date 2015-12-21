@@ -40,6 +40,11 @@ public class Base : MonoBehaviour {
         rb.MovePosition(rb.position + new Vector2(0, inp) * Time.fixedDeltaTime);
     }
 
+    public void moveY(Vector2 force)
+    {
+        rb.AddForce(force);
+    }
+
     public float getYPosition()
     {
         return rb.position.y;

@@ -18,6 +18,7 @@ public class ball : MonoBehaviour
     GameObject scoretextobj;
     Text scoretext;
     private float score;
+    private int BALL_ADJUST = 2;
     // Use this for initialization
     void Start()
     {
@@ -64,8 +65,18 @@ public class ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        rb.AddForce(new Vector2(Input.mousePosition.x-(Screen.width / 2), 0) * 3);
-        print("applying units of force in x axis " + (Input.mousePosition.x - (Screen.width / 2)));
+        //rb.AddForce(new Vector2(Input.mousePosition.x-(Screen.width / 2), 0) * 3);
+        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+        {
+            rb.AddForce(new Vector2(100, 0) * 5);
+            print("applying units of force in x axis 300");
+        }
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+        {
+            rb.AddForce(new Vector2(-100, 0) * 5);
+            print("applying units of force in x axis -100");
+        }
+        
         print("ball height is "+ rb.position.y);
         if (rb.position.x > rightBorder)
         {
@@ -78,12 +89,27 @@ public class ball : MonoBehaviour
             //print("teleporting from rt to lf");
             rb.MovePosition(new Vector2(rightBorder - 1, rb.position.y));
         }
-            
+
+        moveBases();
+
+        baseHelper();
+
+    }
+
+    private void createBase(Vector2 pos)
+    {
+        GameObject temp = Instantiate(referencebaseobj, pos, Quaternion.identity) as GameObject;
+        basesobj.Add(temp);
+    }
+
+    private void moveBases()
+    {
         foreach (GameObject a in basesobj)
         {
-            if (a != null) {
+            if (a != null)
+            {
                 //print("base loc " + a.GetComponent<Base>().getXPosition() + a.GetComponent<Base>().getYPosition());
-               // print("bc off? " + a.GetComponent<Base>().bc.isTrigger);
+                // print("bc off? " + a.GetComponent<Base>().bc.isTrigger);
                 if ((int)rb.velocity.y > 0)
                 {
                     score++;
@@ -91,26 +117,30 @@ public class ball : MonoBehaviour
                     //print("velocity is " + rb.velocity.y);
                     if (rb.position.y > 0)
                     {
-                        a.GetComponent<Base>().moveY(-rb.velocity.y * 2);
+                        a.GetComponent<Base>().moveY(-rb.velocity.y * BALL_ADJUST);
                         rb.velocity.Set(rb.velocity.x, 0);
                     }
-                        
+
                     else
                         a.GetComponent<Base>().moveY(-rb.velocity.y);
-                    
+
 
                 }
                 if (a.GetComponent<Base>().getYPosition() < -25)
                 {
                     Destroy(a);
                 }
-                if (a.GetComponent<Base>().getYPosition()+ a.GetComponent<Base>().getThickness() < rb.position.y)
+                if (a.GetComponent<Base>().getYPosition() + a.GetComponent<Base>().getThickness() < rb.position.y)
                 {
                     //print("BCON");
                     a.GetComponent<Base>().bcOn();
                 }
             }
         }
+    }
+
+    private void baseHelper()
+    {
         if ((int)rb.velocity.y > 0)
         {
             score++;
@@ -119,17 +149,14 @@ public class ball : MonoBehaviour
             if ((int)(ran.getIt() * 50) == 25)
             {
                 print("spawning new platform at x= " + test);
-                createBase(new Vector2(test, rb.position.y+test));
+                createBase(new Vector2(test, rb.position.y + test));
+            }
+
+            if ((int)rb.position.y > 20)
+            {
+                rb.AddForce(new Vector2(0, -rb.mass * rb.velocity.y));
             }
         }
-
-            
-    }
-
-    public void createBase(Vector2 pos)
-    {
-        GameObject temp = Instantiate(referencebaseobj, pos, Quaternion.identity) as GameObject;
-        basesobj.Add(temp);
     }
 
     void SetCountText()
