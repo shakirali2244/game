@@ -11,27 +11,25 @@ public class ball : MonoBehaviour
     RandomProportional ran;
     public GameObject firstbaseobj;
     public GameObject referencebaseobj;
+    GameController gc;
     public List<GameObject> basesobj;
     float width;
     float leftBorder;
     float rightBorder;
-    GameObject scoretextobj;
-    Text scoretext;
-    private float score;
+    
     private int BALL_ADJUST = 2;
     // Use this for initialization
     void Start()
     {
-        score = 0f;
+        
         rb = GetComponent<Rigidbody2D>();
         rb.mass = 30f;
         ran = new RandomProportional();
         firstbaseobj = GameObject.Find("GrassSprite (3)");
         referencebaseobj = GameObject.Find("GrassSprite (4)");
-        scoretextobj = GameObject.Find("Score");
-        scoretext = scoretextobj.GetComponent<Text>();
+        
         basesobj.Add(firstbaseobj);
-
+        gc = base.GetComponent<GameController>();
         Camera cam = Camera.main;
         float height = 2f * cam.orthographicSize;
         width = height * cam.aspect;
@@ -112,8 +110,8 @@ public class ball : MonoBehaviour
                 // print("bc off? " + a.GetComponent<Base>().bc.isTrigger);
                 if ((int)rb.velocity.y > 0)
                 {
-                    score++;
-                    SetCountText();
+                    gc.score++;
+                    
                     //print("velocity is " + rb.velocity.y);
                     if (rb.position.y > 0)
                     {
@@ -137,14 +135,18 @@ public class ball : MonoBehaviour
                 }
             }
         }
+        if (rb.position.y < -30)
+        {
+            gc.gameOver = true;
+        }
     }
 
     private void baseHelper()
     {
         if ((int)rb.velocity.y > 0)
         {
-            score++;
-            SetCountText();
+            gc.score++;
+            
             int test = (int)(ran.getIt() * 10) - 10;
             if ((int)(ran.getIt() * 50) == 25)
             {
@@ -159,10 +161,7 @@ public class ball : MonoBehaviour
         }
     }
 
-    void SetCountText()
-    {
-        scoretext.text = "Score: " + score.ToString();
-    }
+    
 
 
 
