@@ -1,28 +1,36 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
 
-    GameObject scoretextobj;
-    public Text scoretext;
+    public GameObject scoreTextobj;
+    public GameObject restartButtonobj;
+    public GameObject gameoverTextobj;
+
     public float score;
 
     public GameObject ball;
-    public GUIText gameOverText;
-    public GUIText restartText;
-    public bool gameOver;
-    private bool restart;
 
-    void start()
+    private Text gameoverText;
+    private Button restartButton;
+    private Text scoretext;
+
+    public bool gameOver = false;
+    private bool restart = false;
+
+    void Start()
     {
-        restartText.text = "";
-        gameOverText.text = "";
+        print("gamecongtroller start");
+        
         score = 0f;
-        scoretextobj = GameObject.Find("Score");
-        scoretext = scoretextobj.GetComponent<Text>();
-        ball = GameObject.Find("ball");
+        scoretext = scoreTextobj.GetComponent<Text>();
+        restartButton = restartButtonobj.GetComponent<Button>();
+        gameoverText = gameoverTextobj.GetComponent<Text>();
+
+        restartButtonobj.SetActive(false);
+        gameoverText.text = "";
+
     }
 
     void Update()
@@ -30,10 +38,19 @@ public class GameController : MonoBehaviour {
         SetCountText();
         if (gameOver)
         {
-            Destroy(ball);
-            gameOverText.text =  "Gameover";
-            restartText.text = "Restart Fag";
+            ball.GetComponent<ball>().rb.position = new Vector2(0, 0);
+            gameoverText.text =  "Gameover";
+            restartButtonobj.SetActive(true);
         }
+        if (restartButton)
+        {
+            restartButtonobj.SetActive(false);
+            gameoverText.text = "";
+            score = 0f;
+            gameOver = false;
+        }
+
+
     }
 
     void SetCountText()
@@ -43,7 +60,7 @@ public class GameController : MonoBehaviour {
 
     public void GameOver()
     {
-        gameOverText.text = "Game Over!";
+        gameoverText.text = "Game Over!";
         gameOver = true;
     }
 }

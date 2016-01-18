@@ -7,11 +7,12 @@ using UnityEngine.UI;
 //This script manages the player object
 public class ball : MonoBehaviour
 {
-    private Rigidbody2D rb;
-    RandomProportional ran;
-    public GameObject firstbaseobj;
-    public GameObject referencebaseobj;
-    GameController gc;
+    public Rigidbody2D rb;
+    private RandomProportional ran;
+    private GameObject firstbaseobj;
+    private GameObject referencebaseobj;
+    public GameObject gcref;
+    private GameController gc;
     public List<GameObject> basesobj;
     float width;
     float leftBorder;
@@ -29,7 +30,7 @@ public class ball : MonoBehaviour
         referencebaseobj = GameObject.Find("GrassSprite (4)");
         
         basesobj.Add(firstbaseobj);
-        gc = base.GetComponent<GameController>();
+        gc = gcref.GetComponent<GameController>();
         Camera cam = Camera.main;
         float height = 2f * cam.orthographicSize;
         width = height * cam.aspect;
@@ -135,7 +136,7 @@ public class ball : MonoBehaviour
                 }
             }
         }
-        if (rb.position.y < -30)
+        if (rb.position.y < -100)
         {
             gc.gameOver = true;
         }
