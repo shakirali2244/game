@@ -136,10 +136,20 @@ public class ball : MonoBehaviour
                 }
             }
         }
-        if (rb.position.y < -100)
+        if (rb.position.y < -30)
         {
             gc.gameOver = true;
         }
+    }
+
+    public void resetBases()
+    {
+        foreach (GameObject a in basesobj)
+        {
+            Destroy(a);
+        }
+        basesobj.Clear();
+        createBase(new Vector2(0, -20));
     }
 
     private void baseHelper()
@@ -147,7 +157,7 @@ public class ball : MonoBehaviour
         if ((int)rb.velocity.y > 0)
         {
             gc.score++;
-            
+
             int test = (int)(ran.getIt() * 10) - 10;
             if ((int)(ran.getIt() * 50) == 25)
             {
@@ -161,6 +171,12 @@ public class ball : MonoBehaviour
             }
         }
     }
+
+    public void setYposition(float y)
+    {
+        GetComponent<ball>().rb.position = new Vector2(0, y);
+    }
+    
 
     
 

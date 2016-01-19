@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour {
     public float score;
 
     public GameObject ball;
+    private ball ballref;
 
     private Text gameoverText;
     private Button restartButton;
@@ -31,6 +32,7 @@ public class GameController : MonoBehaviour {
         restartButtonobj.SetActive(false);
         gameoverText.text = "";
 
+        ballref = ball.GetComponent<ball>();
     }
 
     void Update()
@@ -38,16 +40,20 @@ public class GameController : MonoBehaviour {
         SetCountText();
         if (gameOver)
         {
-            ball.GetComponent<ball>().rb.position = new Vector2(0, 0);
+            ballref.setYposition(0);
+            ballref.rb.velocity = Vector2.zero;
             gameoverText.text =  "Gameover";
             restartButtonobj.SetActive(true);
         }
-        if (restartButton)
+        if (restart)
         {
+            ballref.setYposition(0);
+            ballref.resetBases();
             restartButtonobj.SetActive(false);
             gameoverText.text = "";
             score = 0f;
             gameOver = false;
+            restart = false;
         }
 
 
@@ -62,5 +68,9 @@ public class GameController : MonoBehaviour {
     {
         gameoverText.text = "Game Over!";
         gameOver = true;
+    }
+
+    public void restartgame() {
+        restart = true;
     }
 }
