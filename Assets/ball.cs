@@ -43,18 +43,17 @@ public class ball : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D coll)
     {
-        if (coll.gameObject.tag == "Hat" && !coll.gameObject.GetComponent<Base>().collided)
+        if (coll.gameObject.tag == "Hat")
         {
            
-            print("collision");
+            //print("collision");
             rb.velocity = Vector2.zero;
             for (int i = 0; i < 10; i++)
             {
                 rb.AddForce(Vector2.up * 70*rb.mass);
-            }
-            coll.gameObject.GetComponent<Base>().collided = true;
+            }	
             int test = (int)((ran.getIt() * width) - width/2);
-            createBase(new Vector2(test, rb.position.y + 15));
+            //createBase(new Vector2(test, rb.position.y + 15));
 
         }
 
@@ -68,15 +67,15 @@ public class ball : MonoBehaviour
         if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
             rb.AddForce(new Vector2(100, 0) * 5);
-            print("applying units of force in x axis 300");
+            //print("applying units of force in x axis 300");
         }
         if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
             rb.AddForce(new Vector2(-100, 0) * 5);
-            print("applying units of force in x axis -100");
+            //print("applying units of force in x axis -100");
         }
         
-        print("ball height is "+ rb.position.y);
+        //print("ball height is "+ rb.position.y);
         if (rb.position.x > rightBorder)
         {
             rb.MovePosition(new Vector2(leftBorder + 1, rb.position.y));
@@ -88,6 +87,10 @@ public class ball : MonoBehaviour
             //print("teleporting from rt to lf");
             rb.MovePosition(new Vector2(rightBorder - 1, rb.position.y));
         }
+
+		if ((int)rb.velocity.y > 0) {
+			gc.score++;
+		}
 
         moveBases();
 
@@ -107,33 +110,39 @@ public class ball : MonoBehaviour
         {
             if (a != null)
             {
+				Base curr = a.GetComponent<Base>();
                 //print("base loc " + a.GetComponent<Base>().getXPosition() + a.GetComponent<Base>().getYPosition());
                 // print("bc off? " + a.GetComponent<Base>().bc.isTrigger);
                 if ((int)rb.velocity.y > 0)
                 {
-                    gc.score++;
                     
+					if ((int)rb.position.y > 10)
+					{
+						rb.AddForce(new Vector2(0, -rb.mass * rb.velocity.y));
+					}
                     //print("velocity is " + rb.velocity.y);
-                    if (rb.position.y > 0)
+                    else if (rb.position.y > 0)
                     {
-                        a.GetComponent<Base>().moveY(-rb.velocity.y * BALL_ADJUST);
+						curr.moveY(-rb.velocity.y * BALL_ADJUST);
                         rb.velocity.Set(rb.velocity.x, 0);
                     }
 
                     else
-                        a.GetComponent<Base>().moveY(-rb.velocity.y);
+						curr.moveY(-rb.velocity.y);
 
 
                 }
-                if (a.GetComponent<Base>().getYPosition() < -25)
-                {
-                    Destroy(a);
-                }
-                if (a.GetComponent<Base>().getYPosition() + a.GetComponent<Base>().getThickness() < rb.position.y)
-                {
-                    //print("BCON");
-                    a.GetComponent<Base>().bcOn();
-                }
+				if (curr.bc.isTrigger == false && curr.getYPosition () + curr.getThickness () < rb.position.y) {
+					//print("BCON");
+					curr.bcOn ();
+				} else if (curr.bc.isTrigger == true && curr.getYPosition () + curr.getThickness () > rb.position.y) {
+					curr.bcOff ();
+				}
+				if (curr.getYPosition() < -25)
+				{
+					Destroy(a);
+					basesobj.Remove(a); //remove the first one
+				}
             }
         }
         if (rb.position.y < -30)
@@ -154,21 +163,21 @@ public class ball : MonoBehaviour
 
     private void baseHelper()
     {
-        if ((int)rb.velocity.y > 0)
+		GameObject tmp = basesobj [basesobj.Count - 1]; //get the last added base
+		float y_last = tmp.GetComponent<Base>().getYPosition();
+		if (y_last < 30)
         {
-            gc.score++;
+            //gc.score++;
+			print(y_last);
 
-            int test = (int)(ran.getIt() * 10) - 10;
-            if ((int)(ran.getIt() * 50) == 25)
+            int test = (int)(ran.getIt() * 40) - 20;
+            if (true)
             {
                 print("spawning new platform at x= " + test);
-                createBase(new Vector2(test, rb.position.y + test));
+				createBase(new Vector2((float)((ran.getIt() * rightBorder) - rightBorder/2), y_last + 10));
             }
 
-            if ((int)rb.position.y > 20)
-            {
-                rb.AddForce(new Vector2(0, -rb.mass * rb.velocity.y));
-            }
+            
         }
     }
 

@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+//Vector Illustration by <a rel="nofollow" href="https://www.vecteezy.com">www.Vecteezy.com</a>
+
 public class GameController : MonoBehaviour {
 
 
@@ -24,10 +26,13 @@ public class GameController : MonoBehaviour {
     {
         print("gamecongtroller start");
         
-        score = 0f;
-        scoretext = scoreTextobj.GetComponent<Text>();
-        restartButton = restartButtonobj.GetComponent<Button>();
-        gameoverText = gameoverTextobj.GetComponent<Text>();
+		score = 0f;
+		scoreTextobj = GameObject.Find("Score");
+		//restartButtonobj = GameObject.Find("RestartButton");
+		gameoverTextobj = GameObject.Find("GameOver");
+		scoretext = scoreTextobj.GetComponent<Text>();
+		restartButton = restartButtonobj.GetComponent<Button>();
+		gameoverText = gameoverTextobj.GetComponent<Text>();
 
         restartButtonobj.SetActive(false);
         gameoverText.text = "";

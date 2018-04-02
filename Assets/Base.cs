@@ -4,7 +4,7 @@ using System.Collections;
 public class Base : MonoBehaviour {
     Rigidbody2D rb;
     public BoxCollider2D bc;
-    public bool collided = false;
+    //public bool collided = false;
 
     // Use this for initialization
     void Start () {
@@ -15,11 +15,11 @@ public class Base : MonoBehaviour {
 
     public void bcOn()
     {
-        bc.isTrigger = false;
+        bc.isTrigger = true;
     }
     public void bcOff()
     {
-        bc.isTrigger = true;
+        bc.isTrigger = false;
     }
 
 
